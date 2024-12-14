@@ -22,11 +22,12 @@ async function main() {
                 let text = "";
                 /** ファイルのテキストバッファ */
                 let buffer = fs.readFileSync(answer);
-                // もしエンコード形式が UTF-16 なら UTF-8 に変換
+                // もしエンコード形式が UTF-8以外 なら UTF-8 に変換
                 // バッファを読み込んで文字列に変換する
-                if (jschardet.detect(buffer).encoding.toLowerCase() == "utf-16") {
-                    console.warn("The file is encoded UTF-16. Encoding is converting UTF-8 now");
-                    text = new Iconv("UTF-16", "UTF-8//TRANSLIT//IGNORE");
+                let encoding = jschardet.detect(buffer).encoding
+                if (encoding != "UTF-8") {
+                    console.warn("Converting UTF-8 now");
+                    text = new Iconv(encoding, "UTF-8//TRANSLIT//IGNORE").convert(buffer).toString();
                 }
                 else {
                     text = buffer.toString("utf-8");
